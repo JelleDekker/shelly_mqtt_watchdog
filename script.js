@@ -20,14 +20,6 @@ function start_timer() {
     });
 }
 
-function ensure_switch_on() {
-    let status = Shelly.getComponentStatus("switch:0");
-    if (status && status.output === false) {
-        print("Homey back online but switch is off, turning it on so Homey can take over");
-        Shelly.call("Switch.Set", { id: 0, on: true });
-    }
-}
-
 MQTT.subscribe("homey/status", function (topic, message) {
     if (DETECTION_MODE === "power") {
         return; // this mode ignores MQTT status entirely
@@ -44,9 +36,6 @@ MQTT.subscribe("homey/status", function (topic, message) {
     }
     print("Homey online, next timeout in " + timeout_ms + "ms");
     start_timer();
-    if (was_offline) {
-        ensure_switch_on();
-    }
 });
 
 // --- Universal wall switch event handler ---
